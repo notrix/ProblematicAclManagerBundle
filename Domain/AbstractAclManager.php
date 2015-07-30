@@ -262,13 +262,13 @@ abstract class AbstractAclManager implements AclManagerInterface
     {
         $aceCollection = $acl->{"get{$type}Aces"}();
 
-        return $aceCollection;
+        return array_values(array_filter($aceCollection));
     }
 
     private function getFieldAceCollection(MutableAclInterface $acl, $type = 'object', $field)
     {
         $aceCollection = $acl->{"get{$type}FieldAces"}($field);
 
-        return $aceCollection;
+        return array_values(array_filter($aceCollection));
     }
 }
