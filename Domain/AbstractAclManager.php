@@ -4,16 +4,15 @@ namespace Problematic\AclManagerBundle\Domain;
 
 use Symfony\Component\Security\Acl\Model\MutableAclProviderInterface;
 use Symfony\Component\Security\Acl\Model\MutableAclInterface;
-use Symfony\Component\Security\Acl\Model\AuditableEntryInterface;
 use Symfony\Component\Security\Acl\Model\ObjectIdentityInterface;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclAlreadyExistsException;
 use Symfony\Component\Security\Acl\Model\SecurityIdentityInterface;
-use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Role\RoleInterface;
-use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Acl\Model\ObjectIdentityRetrievalStrategyInterface;
 use Problematic\AclManagerBundle\Model\PermissionContextInterface;
@@ -28,13 +27,15 @@ abstract class AbstractAclManager implements AclManagerInterface
 {
 
     private $aclProvider;
-    private $securityContext;
+    private $tokenStorage;
+    private $authorizationChecker;
     private $objectIdentityRetrievalStrategy;
 
-    public function __construct(MutableAclProviderInterface $aclProvider, SecurityContextInterface $securityContext, ObjectIdentityRetrievalStrategyInterface $objectIdentityRetrievalStrategy)
+    public function __construct(MutableAclProviderInterface $aclProvider, TokenStorageInterface $tokenStorage, AuthorizationCheckerInterface $authorizationChecker, ObjectIdentityRetrievalStrategyInterface $objectIdentityRetrievalStrategy)
     {
         $this->aclProvider = $aclProvider;
-        $this->securityContext = $securityContext;
+        $this->tokenStorage = $tokenStorage;
+        $this->authorizationChecker = $authorizationChecker;
         $this->objectIdentityRetrievalStrategy = $objectIdentityRetrievalStrategy;
     }
 
@@ -47,11 +48,19 @@ abstract class AbstractAclManager implements AclManagerInterface
     }
 
     /**
-     * @return SecurityContextInterface
+     * @return TokenStorageInterface
      */
-    protected function getSecurityContext()
+    protected function getTokenStorage()
     {
-        return $this->securityContext;
+        return $this->tokenStorage;
+    }
+
+    /**
+     * @return AuthorizationCheckerInterface
+     */
+    protected function getAuthorizationChecker()
+    {
+        return $this->authorizationChecker;
     }
 
     /**

@@ -2,15 +2,6 @@
 
 namespace Problematic\AclManagerBundle\Domain;
 
-use Symfony\Component\Security\Acl\Dbal\MutableAclProvider;
-use Symfony\Component\Security\Acl\Domain\Acl;
-use Symfony\Component\Security\Acl\Model\SecurityIdentityInterface;
-use Symfony\Component\Security\Core\SecurityContext;
-use Problematic\AclManagerBundle\Model\AclManagerInterface;
-use Problematic\AclManagerBundle\Domain\AbstractAclManager;
-use Problematic\AclManagerBundle\Model\PermissionContextInterface;
-use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
-use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use Symfony\Component\Security\Acl\Exception\NoAceFoundException;
 
 class AclManager extends AbstractAclManager
@@ -217,7 +208,7 @@ class AclManager extends AbstractAclManager
 
     public function isGranted($attributes, $object = null)
     {
-        return $this->getSecurityContext()->isGranted($attributes, $object);
+        return $this->getAuthorizationChecker()->isGranted($attributes, $object);
     }
 
     public function isFieldGranted($masks, $object, $field)
@@ -239,7 +230,7 @@ class AclManager extends AbstractAclManager
      */
     public function getUser()
     {
-        $token = $this->getSecurityContext()->getToken();
+        $token = $this->getTokenStorage()->getToken();
 
         if (null === $token) {
             return null;
