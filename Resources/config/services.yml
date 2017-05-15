@@ -3,7 +3,7 @@ parameters:
 
 services:
     problematic.acl_manager:
-        class: %problematic.acl_manager.class%
+        class: "%problematic.acl_manager.class%"
         arguments:
             aclProvider: "@security.acl.provider"
             tokenStorage: "@security.token_storage"
